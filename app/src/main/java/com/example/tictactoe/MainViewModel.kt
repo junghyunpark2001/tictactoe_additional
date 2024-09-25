@@ -40,7 +40,7 @@ class MainViewModel: ViewModel() {
         }
     }
         // Box들을 눌렀을때 일어나는 일. 타일이 채워지고, 플레이어 O, X가 변하고(그에 따라 문구도 변하고), 게임 횟수가 늘어남.
-
+    // 기존 보드가 채워지지 않았는데도 클릭이 더이상 안됨.
     fun CheckFinish(){
         if (_box.value?.get(1) == "X" && _box.value?.get(2) == "X" && _box.value?.get(3) == "X" ||
             _box.value?.get(4) == "X" && _box.value?.get(5) == "X" && _box.value?.get(6) == "X" ||

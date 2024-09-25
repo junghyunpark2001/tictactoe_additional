@@ -1,31 +1,54 @@
 package com.example.tictactoe
 
 import android.os.Bundle
+import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toolbar
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.drawerlayout.widget.DrawerLayout
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel : MainViewModel by viewModels()
-
+    private lateinit var openDrawerButton: ImageButton
+    private lateinit var drawerLayout: DrawerLayout
     override fun onCreate(savedInstanceState: Bundle?) {
         //lateinit var binding: ActivityMainBinding
         //계속 Binding 클래스가 없다고 오류가 뜸... gradle에 정상적으로 추가도해주었는데. 일단 없이 진행.
 
 
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+//        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        // 아래 설정 때문에 방향에 따라 글자,버튼 등 안보임 -> 왠진 모름
+//        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+//            insets
+//        }
 
+        drawerLayout = findViewById(R.id.drawerLayout)
+        openDrawerButton = findViewById((R.id.imageButton))
+
+        openDrawerButton.setOnClickListener{
+            if (!drawerLayout.isDrawerOpen(GravityCompat.END)) {
+                drawerLayout.openDrawer(GravityCompat.END)
+            }
+        }
+//
+//        findViewById<ImageButton>(R.id.imageButton).setOnClickListener {
+//            if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+//                drawerLayout.closeDrawer(GravityCompat.START)
+//            }
+//            else{
+//                drawerLayout.openDrawer(GravityCompat.START)
+//            }
+//        }
         viewModel.box.observe(this){ box ->
             updateUI(box)
             viewModel.CheckFinish()}
@@ -36,6 +59,7 @@ class MainActivity : AppCompatActivity() {
             else
                 findViewById<TextView>(R.id.button).text = "한판 더"
         }
+
         viewModel.player.observe(this){play ->
             when(play)
             {
