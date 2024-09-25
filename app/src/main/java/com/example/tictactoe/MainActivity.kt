@@ -11,12 +11,17 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
 
     private val viewModel : MainViewModel by viewModels()
     private lateinit var openDrawerButton: ImageButton
     private lateinit var drawerLayout: DrawerLayout
+    private lateinit var adapter: TicTacToeAdapter
+    private lateinit var recyclerView: RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         //lateinit var binding: ActivityMainBinding
         //계속 Binding 클래스가 없다고 오류가 뜸... gradle에 정상적으로 추가도해주었는데. 일단 없이 진행.
@@ -35,6 +40,8 @@ class MainActivity : AppCompatActivity() {
         drawerLayout = findViewById(R.id.drawerLayout)
         openDrawerButton = findViewById((R.id.imageButton))
 
+
+
         openDrawerButton.setOnClickListener{
             if (!drawerLayout.isDrawerOpen(GravityCompat.END)) {
                 drawerLayout.openDrawer(GravityCompat.END)
@@ -49,6 +56,19 @@ class MainActivity : AppCompatActivity() {
 //                drawerLayout.openDrawer(GravityCompat.START)
 //            }
 //        }
+
+        // RecyclerView 설정
+        recyclerView = findViewById(R.id.recycler_view)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        adapter = TicTacToeAdapter(mutableListOf()) { position ->
+            onRevert(position)  // Handle Revert button click
+        }
+        recyclerView.adapter = adapter
+        // viewModel의 히스토리 리스트 관찰, recyclerView 업데이트
+        viewModel.historyList.observe(this, Observer { historyList ->
+            adapter.updateHistory(historyList)
+        })
         viewModel.box.observe(this){ box ->
             updateUI(box)
             viewModel.CheckFinish()}
@@ -69,6 +89,23 @@ class MainActivity : AppCompatActivity() {
                 3 -> findViewById<TextView>(R.id.order).text ="무승부"
             }
         }
+        // 현재 틱택토 보드 상태 가져오기
+        fun getCurrentBoardState(): TicTacToeState {
+            val board = listOf(
+                findViewById<TextView>(R.id.box_1).text.toString(),
+                findViewById<TextView>(R.id.box_2).text.toString(),
+                findViewById<TextView>(R.id.box_3).text.toString(),
+                findViewById<TextView>(R.id.box_4).text.toString(),
+                findViewById<TextView>(R.id.box_5).text.toString(),
+                findViewById<TextView>(R.id.box_6).text.toString(),
+                findViewById<TextView>(R.id.box_7).text.toString(),
+                findViewById<TextView>(R.id.box_8).text.toString(),
+                findViewById<TextView>(R.id.box_9).text.toString()
+            )
+            val currentPlayer: Int? =  viewModel.player.value
+
+            return TicTacToeState(board, currentPlayer)
+        }
 
         findViewById<TextView>(R.id.box_1).setOnClickListener { viewModel.PressBox(1) } // 클릭하면 pressbox 함수가 실행되어 데이터가 변한다.
         findViewById<TextView>(R.id.box_2).setOnClickListener { viewModel.PressBox(2) }
@@ -81,7 +118,8 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.box_9).setOnClickListener { viewModel.PressBox(9) }
 
         findViewById<TextView>(R.id.button).setOnClickListener {
-            viewModel.restart()
+            val currentState = getCurrentBoardState()
+            viewModel.restart(currentState)
         } // 클릭하면 restart 함수 실행되어 데이터 초기화.
     }
 
@@ -95,5 +133,17 @@ class MainActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.box_7).text = box[7]
         findViewById<TextView>(R.id.box_8).text = box[8]
         findViewById<TextView>(R.id.box_9).text = box[9]
+    }
+
+    private fun onRevert(position: Int) {
+        if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
+            drawerLayout.closeDrawer(GravityCompat.END)
+        }
+        // Revert game state to the selected position
+        viewModel.revertToState(position)
+
+        // Remove all future history states
+        viewModel.removeFutureStates(position)
+
     }
 }

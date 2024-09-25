@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,6 +18,8 @@ class MainViewModel: ViewModel() {
     private var _restart : MutableLiveData<Int> = MutableLiveData(0) // 한판 더 버튼 활성화 여부. restart 1 되면 '재시작'으로 활성화. (UI가 바뀜)
     val restart : LiveData<Int> = _restart
 
+    private val _historyList = MutableLiveData<MutableList<TicTacToeState>>(mutableListOf())
+    val historyList: LiveData<MutableList<TicTacToeState>> = _historyList
 
     fun PressBox(index: Int){
         if (_box.value?.get(index)?.isEmpty() == true && (_player.value == 0 || _player.value == 1)){
@@ -69,11 +72,37 @@ class MainViewModel: ViewModel() {
         }// 다 채워지면 무승부
     }
 
-    fun restart(){
+    private fun saveHistory(currentState: TicTacToeState){
+
+        _historyList.value?.add(currentState)
+        _historyList.value = _historyList.value
+    }
+
+    fun restart(currentState: TicTacToeState){
+        Log.d("Tag","restart")
+        saveHistory(currentState)
         _restart.value = 0
         _count = 0
         _player.value = 0
         _box.value = List(10) { "" }
+
+    }
+    fun revertToState(position: Int) {
+        // Get the game state at the specified position and revert the game to this state
+        val stateToRevert = _historyList.value?.get(position) ?: return
+        // Set the current board and player state to this state
+        Log.d("TAG","here")
+        _box.value = stateToRevert.board
+
+        _player.value = stateToRevert.currentPlayer
+
+
+    }
+
+    fun removeFutureStates(position: Int) {
+        // Remove all future states after the current position
+        val newHistoryList = _historyList.value?.take(position + 1)?.toMutableList() ?: return
+        _historyList.value = newHistoryList
     }
 }
     // 끝났는지 체크할 수 있도록. 항상 실행이 되어야함. 끝나면 "초기화"가 "한판더"로 바뀜.
