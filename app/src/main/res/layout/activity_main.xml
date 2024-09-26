@@ -6,7 +6,11 @@
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:focusableInTouchMode="false"
+    android:clickable="false"
+    android:focusable="false"
+    android:descendantFocusability="blocksDescendants">
 
 
     <!-- 이 부분에는 메인 화면의 UI를 넣습니다. -->
@@ -220,34 +224,22 @@
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <LinearLayout
-
+    <!-- 주 콘텐츠 뷰 -->
+    <FrameLayout
+        android:id="@+id/content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="end"
+        android:clickable="false"
+        android:focusable="false"/>
 
-        android:orientation="vertical">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="280dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="start"
-
-            android:nestedScrollingEnabled="true" />
-
-    </LinearLayout>
-    <!--    <com.google.android.material.navigation.NavigationView-->
-    <!--        android:id="@+id/drawer"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="match_parent"-->
-    <!--        android:layout_gravity="start">-->
-
-    <!--        &lt;!&ndash; 이 부분에는 서랍 안 화면의 UI를 넣습니다. &ndash;&gt;-->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view"
+        android:layout_width="280dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:nestedScrollingEnabled="true" />
 
 
-    <!--    </com.google.android.material.navigation.NavigationView>-->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

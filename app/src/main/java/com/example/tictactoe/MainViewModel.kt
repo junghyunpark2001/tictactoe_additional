@@ -6,6 +6,21 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class MainViewModel: ViewModel() {
+    private val _buttonText = MutableLiveData<String>()
+    val buttonText: LiveData<String> get() = _buttonText
+
+    init {
+        // 초기 텍스트 설정
+        _buttonText.value = "초기 텍스트"
+    }
+
+    fun onButtonClick(newText: String) {
+        // 버튼 클릭 시 텍스트 변경
+        _buttonText.value = newText
+    }
+
+
+
     private val _box: MutableLiveData<List<String>> = MutableLiveData(List(10){""})
     val box: LiveData<List<String>> get() = _box  // 외부에 공개하는 데이터. 여기서는 필요 없나?
 
@@ -89,12 +104,36 @@ class MainViewModel: ViewModel() {
     }
     fun revertToState(position: Int) {
         // Get the game state at the specified position and revert the game to this state
-        val stateToRevert = _historyList.value?.get(position) ?: return
+//        val stateToRevert = _historyList.value?.get(position) ?: return
         // Set the current board and player state to this state
         Log.d("TAG","here")
-        _box.value = stateToRevert.board
+//        _box.value = stateToRevert.board
+//
+//        _player.value = stateToRevert.currentPlayer
+//        val stateToRevert = _historyList.value?.get(position)?: return
+//        historyList.value?.getOrNull(position)?.board
+        val stateToRevert = historyList.value?.getOrNull(position)
 
-        _player.value = stateToRevert.currentPlayer
+        if (stateToRevert != null) {
+
+//            _box.value = stateToRevert.board // historyList의 board를 _box에 할당
+            _player.value = stateToRevert.currentPlayer // 플레이어 상태도 업데이트
+//            val index = 0 // 원하는 인덱스 번호
+//            val specificValue = stateToRevert.board[index]
+//            val specificValue = stateToRevert.board
+            val board = stateToRevert.board
+
+            // List를 생성하면서 각 인덱스에 대해 board의 값을 담습니다.
+            _box.value = List(10) { index -> board.getOrElse(index-1) { "" } } // board의 각 인덱스 값을 담고, 없으면 빈 문자열로 설정
+
+//            Log.d("TicTacToeViewModel", "Value at index $index: $specificValue")
+        } else {
+            Log.e("TicTacToeViewModel", "No state found at position $position")
+        }
+        // state가 null이 아니면 해당 board를 _box에 할당
+
+
+
 
 
     }
@@ -104,6 +143,8 @@ class MainViewModel: ViewModel() {
         val newHistoryList = _historyList.value?.take(position + 1)?.toMutableList() ?: return
         _historyList.value = newHistoryList
     }
+
+
 }
     // 끝났는지 체크할 수 있도록. 항상 실행이 되어야함. 끝나면 "초기화"가 "한판더"로 바뀜.
 
