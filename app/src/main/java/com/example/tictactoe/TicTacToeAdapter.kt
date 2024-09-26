@@ -42,20 +42,28 @@ class TicTacToeAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentState = historyList[position]
 //        holder.boardTextView.text = currentState.board.joinToString(" | ")  // 간단히 상태를 표시
-        holder.messageTextView.text = currentState.currentPlayer.toString()
+//        holder.messageTextView.text = currentState.currentPlayer.toString()
+        holder.messageTextView.text =
+            when (currentState.currentPlayer) {
+                0 -> "O의 차례입니다"
+                1 -> "X의 차례입니다"
+                2 -> "게임 오버"
+                3 -> "무승부"
+                else -> {""}
+            }
 
         for (i in 0..8) {
-            holder.boardTextViews[i].text = currentState.board[i].toString()
+            holder.boardTextViews[i].text = currentState.board[i]
         }
 
 
         holder.revertButton.setOnClickListener {
             onRevertClick(position)
         }
-        holder.revertButton.setOnClickListener {
-            onRevertClick(position)
-
-        }
+//        holder.revertButton.setOnClickListener {
+//            onRevertClick(position)
+//
+//        }
 
 
     }
@@ -65,7 +73,8 @@ class TicTacToeAdapter(
     }
 
     fun updateHistory(newHistoryList: MutableList<TicTacToeState>) {
-        historyList = newHistoryList.reversed().toMutableList()
+//        historyList = newHistoryList
+       historyList = newHistoryList.reversed().toMutableList()
         notifyDataSetChanged()  // 데이터 변경을 알리고 RecyclerView를 새로고침
     }
 }

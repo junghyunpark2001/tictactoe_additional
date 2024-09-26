@@ -102,25 +102,17 @@ class MainViewModel: ViewModel() {
         _box.value = List(10) { "" }
 
     }
+    fun getHistoryListSize(): Int {
+        return _historyList.value?.size ?: 0  // null인 경우 0을 반환
+    }
+
     fun revertToState(position: Int) {
-        // Get the game state at the specified position and revert the game to this state
-//        val stateToRevert = _historyList.value?.get(position) ?: return
-        // Set the current board and player state to this state
+        val size = getHistoryListSize()
         Log.d("TAG","here")
-//        _box.value = stateToRevert.board
-//
-//        _player.value = stateToRevert.currentPlayer
-//        val stateToRevert = _historyList.value?.get(position)?: return
-//        historyList.value?.getOrNull(position)?.board
-        val stateToRevert = historyList.value?.getOrNull(position)
-
+        val stateToRevert = historyList.value?.getOrNull(size-1-position)
         if (stateToRevert != null) {
-
-//            _box.value = stateToRevert.board // historyList의 board를 _box에 할당
             _player.value = stateToRevert.currentPlayer // 플레이어 상태도 업데이트
-//            val index = 0 // 원하는 인덱스 번호
-//            val specificValue = stateToRevert.board[index]
-//            val specificValue = stateToRevert.board
+
             val board = stateToRevert.board
 
             // List를 생성하면서 각 인덱스에 대해 board의 값을 담습니다.
@@ -130,22 +122,14 @@ class MainViewModel: ViewModel() {
         } else {
             Log.e("TicTacToeViewModel", "No state found at position $position")
         }
-        // state가 null이 아니면 해당 board를 _box에 할당
-
-
-
-
-
     }
 
     fun removeFutureStates(position: Int) {
         // Remove all future states after the current position
-        val newHistoryList = _historyList.value?.take(position + 1)?.toMutableList() ?: return
+        val size = getHistoryListSize()
+        val newHistoryList = _historyList.value?.take(size-position)?.toMutableList() ?: return
         _historyList.value = newHistoryList
     }
 
 
 }
-    // 끝났는지 체크할 수 있도록. 항상 실행이 되어야함. 끝나면 "초기화"가 "한판더"로 바뀜.
-
-// 어차피 콜백 ftn으로 할거니 계속해서 불려질듯?
