@@ -32,6 +32,7 @@ class TicTacToeAdapter(
             itemView.findViewById(R.id.block_7),
             itemView.findViewById(R.id.block_8)
         )
+        val gameStart: TextView = view.findViewById(R.id.game_start)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,8 +42,7 @@ class TicTacToeAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentState = historyList[position]
-//        holder.boardTextView.text = currentState.board.joinToString(" | ")  // 간단히 상태를 표시
-//        holder.messageTextView.text = currentState.currentPlayer.toString()
+
         holder.messageTextView.text =
             when (currentState.currentPlayer) {
                 0 -> "O의 차례입니다"
@@ -56,7 +56,9 @@ class TicTacToeAdapter(
             holder.boardTextViews[i].text = currentState.board[i]
         }
 
-
+        if (position == 0) {
+            holder.gameStart.text = "게임 시작!" // 추가할 텍스트
+        }
         holder.revertButton.setOnClickListener {
             onRevertClick(position)
         }
